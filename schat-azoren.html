@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>De Schat van de Azoren</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+
+    background:linear-gradient(#0f172a,#1e293b);
+    color:white;
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+.container{
+
+    width:90%;
+    max-width:420px;
+
+    background:#16213e;
+
+    padding:25px;
+
+    border-radius:20px;
+
+    text-align:center;
+
+    box-shadow:0 0 25px black;
+
+}
+
+
+h1{
+
+    color:#FFD700;
+    margin-bottom:20px;
+
+}
+
+
+button{
+
+    width:100%;
+
+    padding:15px;
+
+    margin-top:20px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#FFD700;
+
+    font-size:18px;
+
+    font-weight:bold;
+
+}
+
+
+.card{
+
+    background:#243b55;
+
+    padding:20px;
+
+    margin-top:20px;
+
+    border-radius:15px;
+
+}
+
+
+#spel{
+
+    display:none;
+
+}
+
+
+#opdracht{
+
+    display:none;
+
+}
+
+
+.timer{
+
+    margin-top:15px;
+
+    color:#FFD700;
+
+    font-size:20px;
+
+}
+
+
+input{
+
+    width:100%;
+
+    padding:12px;
+
+    margin-top:15px;
+
+    border-radius:10px;
+
+    border:none;
+
+    font-size:18px;
+
+    text-align:center;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<div id="start">
+
+<h1>🏴‍☠️ De Schat van de Azoren</h1>
+
+
+<p>
+
+Een eeuwenoude schat ligt verborgen op São Miguel.
+
+Alleen echte ontdekkingsreizigers kunnen hem vinden.
+
+</p>
+
+
+<button onclick="startGame()">
+
+Start avontuur
+
+</button>
+
+
+</div>
+
+
+
+<div id="spel">
+
+
+<h2>Hoofdstuk 1</h2>
+
+
+<div class="card">
+
+<p>
+
+De eerste aanwijzing ligt verborgen bij de oude stadspoort.
+
+Ga naar:
+
+<br><br>
+
+<b>Portas da Cidade</b>
+
+<br><br>
+
+De GPS controleert of je op de juiste plek bent.
+
+</p>
+
+</div>
+
+
+
+<div class="timer">
+
+⏱️ Tijd:
+<span id="tijd">00:00</span>
+
+</div>
+
+
+<div class="timer">
+
+⭐ Score:
+<span id="score">0</span>
+
+</div>
+
+
+
+<div id="opdracht">
+
+
+<div class="card">
+
+<h2>📜 Opdracht 1</h2>
+
+
+<p>
+
+Hoeveel bogen heeft Portas da Cidade?
+
+</p>
+
+
+<input id="antwoord" type="number">
+
+
+<button onclick="controleer()">
+
+Controleer
+
+</button>
+
+
+<p id="feedback"></p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+let seconden = 0;
+
+let score = 0;
+
+let timer;
+
+
+const locatie = {
+
+lat:37.73980,
+
+lon:-25.66847,
+
+afstand:50
+
+};
+
+
+
+function startGame(){
+
+
+document.getElementById("start").style.display="none";
+
+document.getElementById("spel").style.display="block";
+
+
+timer=setInterval(tellen,1000);
+
+
+startGPS();
+
+
+}
+
+
+
+function tellen(){
+
+
+seconden++;
+
+
+let minuten=Math.floor(seconden/60);
+
+let sec=seconden%60;
+
+
+document.getElementById("tijd").innerHTML =
+
+String(minuten).padStart(2,"0")+":"+
+
+String(sec).padStart(2,"0");
+
+
+}
+
+
+
+
+function startGPS(){
+
+
+if(!navigator.geolocation){
+
+alert("GPS werkt niet op dit apparaat.");
+
+return;
+
+}
+
+
+
+navigator.geolocation.watchPosition(
+
+controleerLocatie,
+
+foutGPS,
+
+{
+
+enableHighAccuracy:true
+
+}
+
+);
+
+
+}
+
+
+
+function controleerLocatie(position){
+
+
+let afstand = berekenAfstand(
+
+position.coords.latitude,
+
+position.coords.longitude,
+
+locatie.lat,
+
+locatie.lon
+
+);
+
+
+
+if(afstand < locatie.afstand){
+
+
+document.getElementById("opdracht").style.display="block";
+
+
+}
+
+
+}
+
+
+
+
+function foutGPS(){
+
+alert("GPS toegang geweigerd.");
+
+}
+
+
+
+
+function berekenAfstand(lat1,lon1,lat2,lon2){
+
+
+const R=6371000;
+
+
+const dLat=(lat2-lat1)*Math.PI/180;
+
+const dLon=(lon2-lon1)*Math.PI/180;
+
+
+const a=
+
+Math.sin(dLat/2)**2+
+
+Math.cos(lat1*Math.PI/180)*
+
+Math.cos(lat2*Math.PI/180)*
+
+Math.sin(dLon/2)**2;
+
+
+
+return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+
+}
+
+
+
+
+
+function controleer(){
+
+
+let antwoord=document.getElementById("antwoord").value;
+
+
+if(antwoord=="3"){
+
+
+score+=100;
+
+
+document.getElementById("score").innerHTML=score;
+
+
+document.getElementById("feedback").innerHTML=
+
+"🎉 Goed gedaan! De volgende aanwijzing komt eraan.";
+
+
+}
+
+else{
+
+
+document.getElementById("feedback").innerHTML=
+
+"❌ Dat klopt niet. Kijk goed naar de poort.";
+
+
+}
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
